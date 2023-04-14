@@ -1,20 +1,32 @@
-﻿import numpy as np
+import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import animation
-from matplotlib import colors
+
+import pygame
 
 
 # попытка смоделировать магматическую камеру как клеточный автомат
-# v0.2
-# кристаллы оливина случайным образом формируются в однородной толще расплава
-# и тонут. Температура системы постоянна
+# визуализация на pygame
+# работает!
 
 neighbourhood = ((-1,-1), (-1,0), (-1,1), (0,-1), (0,1), (1,1), (1,0), (1,1))
 L2, L1, L0 = 0, 1, 2
 OL, ROOF = 3, 4
 BACKGROUND = 5
-cmap2 = colors.ListedColormap(['yellow', 'gold', 'orange', 'green', 'dimgray', 'black'])
 
+COLORS = [
+    (255,255,50),
+    (0,0,200),
+    (0,0,200),
+    (0,200,0),
+    (50,50,50),
+    (0,0,0)
+    ]
+
+SCREEN_WIDTH = 250
+SCREEN_HEIGHT = 250
+CELL_SIZE = 10
+BOTTOM_OFFSET = 0
+    
 TIME_INTERVAL = 50
 DEBUG_MODE = False
 ##bounds = [0,1,2,3,4]
@@ -49,27 +61,43 @@ def iterate(X):
              
     return X1
 
+def draw(X):
+    for ix in range(nx):
+        for iy in range(ny):
+            pygame.draw.rect(screen, COLORS[int(X[iy,ix])], [ix*CELL_SIZE,
+                                                             iy*CELL_SIZE,
+                                                             (ix+1)*CELL_SIZE,
+                                                             (iy+1)*CELL_SIZE])
+            
+    pygame.display.update()
+    
 
-fig = plt.figure(facecolor='black',figsize=(5,5))
-ax = fig.add_subplot(111)
-ax.set_axis_off()
 
-nx, ny = 30, 30
+pygame.init()
+
+
+screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
+
+
+nx, ny = SCREEN_WIDTH // CELL_SIZE, SCREEN_HEIGHT // CELL_SIZE - BOTTOM_OFFSET
 X = np.zeros((ny, nx))
 X[0] = [ROOF]*nx
 X[ny-1] = [BACKGROUND]*nx
 X[ny-2] = [ROOF]*nx
-X[20,5] = OL
+#X[20,5] = OL
 
-im = ax.imshow(X, cmap = cmap2, interpolation = 'nearest')
+draw(X)
 
+iteration = 0
+running = True
+while running:
+    #name = "s" + str(iteration) +".jpg"
+    #pygame.image.save(screen, name)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+    draw(X)
+    X = iterate(X)
+    iteration+=1
 
-def animate(i):
-    im.set_data(animate.X)
-    animate.X = iterate(animate.X)
-
-animate.X = X
-
-
-anim = animation.FuncAnimation(fig, animate, interval = TIME_INTERVAL, frames = 200)
-plt.show()
+pygame.quit()
