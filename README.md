@@ -8,7 +8,7 @@ Uses `pygame` to show animated process
 Green "olivine crystals" form randomly inside the chamber and sink to the bottom  
 
 TODO:
-- implement cooling process
+- implement cooling process and heat transfer
 - add different crystal phases with specific melting temperatures and comositions
-- probably add some comments
+- implement melt mixing and convection
 
