@@ -5,9 +5,8 @@ import pygame
 
 
 # попытка смоделировать магматическую камеру как клеточный автомат
-# v0.2.1
 # визуализация на pygame
-# sorta works but quicky crashes :(((
+# работает!
 
 neighbourhood = ((-1,-1), (-1,0), (-1,1), (0,-1), (0,1), (1,1), (1,0), (1,1))
 L2, L1, L0 = 0, 1, 2
@@ -23,6 +22,10 @@ COLORS = [
     (0,0,0)
     ]
 
+SCREEN_WIDTH = 250
+SCREEN_HEIGHT = 250
+CELL_SIZE = 10
+BOTTOM_OFFSET = 0
     
 TIME_INTERVAL = 50
 DEBUG_MODE = False
@@ -59,9 +62,12 @@ def iterate(X):
     return X1
 
 def draw(X):
-    for ix in range(nx-1):
-        for iy in range(ny-1):
-            pygame.draw.rect(screen, COLORS[int(X[iy,ix])], [ix*11, iy*11, ix*11+10, iy*11+10])
+    for ix in range(nx):
+        for iy in range(ny):
+            pygame.draw.rect(screen, COLORS[int(X[iy,ix])], [ix*CELL_SIZE,
+                                                             iy*CELL_SIZE,
+                                                             (ix+1)*CELL_SIZE,
+                                                             (iy+1)*CELL_SIZE])
             
     pygame.display.update()
     
@@ -69,26 +75,29 @@ def draw(X):
 
 pygame.init()
 
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+
 screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 
-nx, ny = 30, 30
+
+nx, ny = SCREEN_WIDTH // CELL_SIZE, SCREEN_HEIGHT // CELL_SIZE - BOTTOM_OFFSET
 X = np.zeros((ny, nx))
 X[0] = [ROOF]*nx
 X[ny-1] = [BACKGROUND]*nx
 X[ny-2] = [ROOF]*nx
-X[20,5] = OL
+#X[20,5] = OL
 
 draw(X)
 
+iteration = 0
 running = True
 while running:
-    pygame.event.get()
+    #name = "s" + str(iteration) +".jpg"
+    #pygame.image.save(screen, name)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
     draw(X)
     X = iterate(X)
-##    for i in pygame.event.get():
-##        if i.type == QUIT:
-##            quit()
+    iteration+=1
 
 pygame.quit()
