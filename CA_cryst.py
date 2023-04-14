@@ -1,20 +1,29 @@
 ﻿import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import animation
-from matplotlib import colors
+
+import pygame
 
 
 # попытка смоделировать магматическую камеру как клеточный автомат
-# v0.2
-# кристаллы оливина случайным образом формируются в однородной толще расплава
-# и тонут. Температура системы постоянна
+# v0.2.1
+# визуализация на pygame
+# sorta works but quicky crashes :(((
 
 neighbourhood = ((-1,-1), (-1,0), (-1,1), (0,-1), (0,1), (1,1), (1,0), (1,1))
 L2, L1, L0 = 0, 1, 2
 OL, ROOF = 3, 4
 BACKGROUND = 5
-cmap2 = colors.ListedColormap(['yellow', 'gold', 'orange', 'green', 'dimgray', 'black'])
 
+COLORS = [
+    (255,255,50),
+    (0,0,200),
+    (0,0,200),
+    (0,200,0),
+    (50,50,50),
+    (0,0,0)
+    ]
+
+    
 TIME_INTERVAL = 50
 DEBUG_MODE = False
 ##bounds = [0,1,2,3,4]
@@ -49,10 +58,21 @@ def iterate(X):
              
     return X1
 
+def draw(X):
+    for ix in range(nx):
+        for iy in range(ny):
+            cell = pygame.Surface((10,10))
+            color = COLORS[int(X[iy,ix])]
+            cell.fill(color)
+            screen.blit(cell, (ix*11, iy*11))
+            pygame.display.update()
 
-fig = plt.figure(facecolor='black',figsize=(5,5))
-ax = fig.add_subplot(111)
-ax.set_axis_off()
+
+pygame.init()
+
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 
 nx, ny = 30, 30
 X = np.zeros((ny, nx))
@@ -61,15 +81,11 @@ X[ny-1] = [BACKGROUND]*nx
 X[ny-2] = [ROOF]*nx
 X[20,5] = OL
 
-im = ax.imshow(X, cmap = cmap2, interpolation = 'nearest')
+draw(X)
 
+running = True
+while running:
+    draw(X)
+    X = iterate(X)
 
-def animate(i):
-    im.set_data(animate.X)
-    animate.X = iterate(animate.X)
-
-animate.X = X
-
-
-anim = animation.FuncAnimation(fig, animate, interval = TIME_INTERVAL, frames = 200)
-plt.show()
+pygame.quit()
