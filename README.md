@@ -1,5 +1,5 @@
 # cellular-magma
-Visualizing crystallisation in a magma chamber using cellular automaton &amp; little to no actual thermodynamics.  
+Visualizing crystallisation in a magma chamber using a cellular automaton &amp; little to no actual thermodynamics.  
 A geology student's proof-of-concept project
 
 Uses `pygame` to show animated process 
