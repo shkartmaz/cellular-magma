@@ -1,4 +1,4 @@
-﻿import numpy as np
+import numpy as np
 import matplotlib.pyplot as plt
 
 import pygame
@@ -59,13 +59,12 @@ def iterate(X):
     return X1
 
 def draw(X):
-    for ix in range(nx):
-        for iy in range(ny):
-            cell = pygame.Surface((10,10))
-            color = COLORS[int(X[iy,ix])]
-            cell.fill(color)
-            screen.blit(cell, (ix*11, iy*11))
-            pygame.display.update()
+    for ix in range(nx-1):
+        for iy in range(ny-1):
+            pygame.draw.rect(screen, COLORS[int(X[iy,ix])], [ix*11, iy*11, ix*11+10, iy*11+10])
+            
+    pygame.display.update()
+    
 
 
 pygame.init()
@@ -85,7 +84,11 @@ draw(X)
 
 running = True
 while running:
+    pygame.event.get()
     draw(X)
     X = iterate(X)
+##    for i in pygame.event.get():
+##        if i.type == QUIT:
+##            quit()
 
 pygame.quit()
