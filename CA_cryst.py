@@ -1,6 +1,5 @@
 import numpy as np
 import pygame
-import Color_Match as cm
 
 from dataclasses import dataclass
 
@@ -8,14 +7,7 @@ from dataclasses import dataclass
 L = 0
 OL, ROOF = 3, 4
 BACKGROUND = 5
-COLORS = [
-    (255,255,50),
-    (0,0,200),
-    (0,0,200),
-    (0,200,0),
-    (50,50,50),
-    (0,0,0)
-    ]
+
 CRYST_PROBABILITY = 0.005
 
 # visuals setup
@@ -41,11 +33,12 @@ class Cell:
         
     def color(self):
         if self.phase == L:
-##            colors = 255 * cm.rgb_composition(623e-9, 528e-9, 470e-9,
-##                                    cm.sense_vector(cm.planck_spectrum(self.temperature+273)))
-##            colors_int = tuple(map(int,colors))
-##            return colors_int
-            return (250,80,10)
+            # color scale pre-generated with Color_Match module by carpdiem
+            # works in range 500..2000 Celsius
+            t = self.temperature
+            g = int(t*0.0686 - 25.3)
+            b = int(0.00002*t**2 - 0.024*t + 8.37)
+            return (255, g, b)
         elif self.phase == OL:
             return (0,200,0)
         elif self.phase == ROOF:
@@ -85,6 +78,11 @@ def iterate(X):
             # every Liquid cell crystallizes with a set chance
             elif X[iy,ix].phase == L and np.random.random() < CRYST_PROBABILITY:
                 X1[iy,ix] = Cell(phase = OL)
+
+            # basic cooling
+            else:
+                X1[iy,ix].temperature = X[iy,ix].temperature - 2
+    #print(X1[2,2].temperature)
 
     if MODE_DEBUG:
         print(f'{L_counter} liquid cells left')
