@@ -1,5 +1,7 @@
 import numpy as np
 import pygame
+import Color_Match as cm
+
 from dataclasses import dataclass
 
 # cell phase color constants
@@ -22,6 +24,8 @@ SCREEN_HEIGHT = 250
 CELL_SIZE = 10
 BOTTOM_OFFSET = 0
 
+MODE_DEBUG = False
+    
 
 @dataclass
 class Cell:
@@ -34,6 +38,23 @@ class Cell:
 ##    Al2O3:  float = 10
     def show(self):
         print(f'Phase {self.phase}, temperature {self.temperature}')
+        
+    def color(self):
+        if self.phase == L:
+##            colors = 255 * cm.rgb_composition(623e-9, 528e-9, 470e-9,
+##                                    cm.sense_vector(cm.planck_spectrum(self.temperature+273)))
+##            colors_int = tuple(map(int,colors))
+##            return colors_int
+            return (250,80,10)
+        elif self.phase == OL:
+            return (0,200,0)
+        elif self.phase == ROOF:
+            return (50,50,50)
+        elif self.phase == BACKGROUND:
+            return (0,0,0)
+        else:
+            return (0,0,200)
+            
 
 def iterate(X):
     """Perform a step from X state according to the rules and return new state X1"""
@@ -64,7 +85,10 @@ def iterate(X):
             # every Liquid cell crystallizes with a set chance
             elif X[iy,ix].phase == L and np.random.random() < CRYST_PROBABILITY:
                 X1[iy,ix] = Cell(phase = OL)
-    print(f'{L_counter} liquid cells left')
+
+    if MODE_DEBUG:
+        print(f'{L_counter} liquid cells left')
+
     if L_counter == 0:
         pygame.quit()
     return X1
@@ -73,7 +97,7 @@ def draw(X):
     """Draw a rectangle of correcponding for each cell"""
     for ix in range(nx):
         for iy in range(ny):
-            pygame.draw.rect(screen, COLORS[X[iy,ix].phase],
+            pygame.draw.rect(screen, X[iy,ix].color(),
                              [ix*CELL_SIZE,iy*CELL_SIZE,
                               (ix+1)*CELL_SIZE,(iy+1)*CELL_SIZE]
                              )
@@ -93,7 +117,10 @@ X[ny-2] = [Cell(ROOF)]*nx
 X[5,5] = Cell(phase = OL)
 X[10,10] = Cell(X[5,5].phase)
 
-
+if MODE_DEBUG:
+    print(X[5,5].color())
+    print(X[3,3].color())
+    input()
 
 
 # initialize pygame
@@ -104,7 +131,7 @@ screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 iteration = 0  # only used for screenshots as of now
 running = True
 while running:
-    print('step ',iteration)
+    # print('step ',iteration)
     # making screenshots
     #name = "s" + str(iteration) +".jpg"
     #pygame.image.save(screen, name)
