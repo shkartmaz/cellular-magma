@@ -1,5 +1,5 @@
-# cellular-magma
-Visualizing crystallisation in a magma chamber using cellular automaton &amp; little to no actual thermodynamics.
+Working my way towards multiple crystal phases & temperature-dependant crystallization
 
-Uses `matplotlib.pyplot` to show animated process 
-
+Cell class is used to store temperature and composition values
+Magma temperature is converted to RGB using polynomial equations, which are pre-calculated using `Color_Match` [module](https://github.com/carpdiem/Color-Match) by carpdiem.  
+Supported temperature range is from 500 to 2000 Celsius
