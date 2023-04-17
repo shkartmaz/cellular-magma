@@ -12,7 +12,7 @@ BACKGROUND = 5
 
 CRYST_PROBABILITY = 0.005
 TEMPERATURE_TRANSFER = 0.01
-MAX_ITERATION = 10
+MAX_ITERATION = 100
 
 # visuals setup
 SCREEN_WIDTH = 250
@@ -141,7 +141,10 @@ print(a)
 
 # initialize pygame
 pygame.init()
+icon = pygame.image.load('resource/icon.png')
+pygame.display.set_icon(icon)
 screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
+
 
 
 
@@ -150,6 +153,7 @@ iteration = 0  # only used for screenshots as of now
 statistics = []
 running = True
 while running and X[1,0].temperature > 1 and iteration < MAX_ITERATION:
+    pygame.display.set_caption(f'Step {iteration}')
     draw(X)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
